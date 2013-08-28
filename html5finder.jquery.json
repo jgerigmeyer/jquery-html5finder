@@ -1,0 +1,27 @@
+{
+  "name": "html5finder",
+  "title": "HTML5 Finder",
+  "description": "jQuery HTML5 Drilldown Finder Plugin",
+  "version": "0.2.0",
+  "homepage": "https://github.com/jgerigmeyer/jquery-html5finder",
+  "author": {
+    "name": "Jonny Gerig Meyer",
+    "email": "jonny@oddbird.net",
+    "url": "http://oddbird.net/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jgerigmeyer/jquery-html5finder.git"
+  },
+  "bugs": "https://github.com/jgerigmeyer/jquery-html5finder/issues",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/jgerigmeyer/jquery-html5finder/blob/master/LICENSE-MIT"
+    }
+  ],
+  "dependencies": {
+    "jquery": "*"
+  },
+  "keywords": ["drilldown", "finder", "html5"]
+}
