@@ -1,13 +1,6 @@
-/*
- * jQuery html5finder 0.2
- * https://github.com/jgerigmeyer/jquery-html5finder
- *
- * Copyright (c) 2013, Jonny Gerig Meyer
- * All rights reserved.
- *
- * Licensed under the MIT license.
- */
-
+/*! HTML5 Finder - v0.2.0 - 2013-08-28
+* https://github.com/jgerigmeyer/jquery-html5finder
+* Copyright (c) 2013 Jonny Gerig Meyer; Licensed MIT */
 (function ($) {
 
     'use strict';

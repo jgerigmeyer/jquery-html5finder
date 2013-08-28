@@ -8,7 +8,10 @@
   <!-- Load local QUnit. -->
   <link rel="stylesheet" href="../libs/qunit/qunit.css" media="screen">
   <script src="../libs/qunit/qunit.js"></script>
+  <script src="../libs/qunit/sinon.js"></script>
+  <script src="../libs/qunit/sinon-qunit.js"></script>
   <!-- Load local lib and tests. -->
+  <script src="../libs/handlebars.js"></script>
   <script src="../src/html5finder.js"></script>
   <script src="html5finder_test.js"></script>
   <!-- Removing access to jQuery and $. But it'll still be available as _$, if
@@ -19,9 +22,7 @@
 <body>
   <div id="qunit"></div>
   <div id="qunit-fixture">
-    <span>lame test markup</span>
-    <span>normal test markup</span>
-    <span>awesome test markup</span>
+    <div class="finder"></div>
   </div>
 </body>
 </html>

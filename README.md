@@ -11,20 +11,50 @@ Download the [production version][min] or the [development version][max].
 In your web page:
 
 ```html
+<div id="finder-container">
+  <div class="finder" data-cols="1">
+    <section class="col focus">
+      <ul class="colcontent">
+        <li class="finderitem">
+          <input type="radio" name="col1" id="finder-col1-item1" data-url="/ajax/url?parent=item1" data-children="true" class="finderinput">
+          item1
+        </li>
+      </ul>
+    </section>
+  </div>
+</div>
+
 <script src="jquery.js"></script>
+<script src="handlebars.js"></script>
 <script src="dist/html5finder.min.js"></script>
 <script>
-jQuery(function($) {
-  $.awesome(); // "awesome"
+$('#finder-container').html5finder({
+  itemTplFn: function (data) {
+    var item =
+      '{{#each data}}' +
+      '<li class="finderitem">' +
+        '<input type="radio" name="{{../colname}}" id="finder-{{../colname}}-{{id}}" data-url="/ajax/url?parent={{id}}" data-children="{{has_children}}" class="finderinput">' +
+        '{{name}}' +
+      '</li>' +
+      '{{/each}}';
+    var itemTpl = Handlebars.compile(item);
+    return $($.parseHTML(itemTpl(data)));
+  },
+  columnTplFn: function (data) {
+    var col =
+      '<section class="col focus">' +
+        '<ul class="colcontent"></ul>' +
+      '</section>';
+    var colTpl = Handlebars.compile(col);
+    return $($.parseHTML(colTpl(data)));
+  },
+  horizontalScroll: true,
+  scrollContainer: '.finder',
+  sectionSelector: '.col',
+  sectionContentSelector: '.colcontent'
 });
 </script>
 ```
 
-## Documentation
-_(Coming soon)_
-
-## Examples
-_(Coming soon)_
-
 ## Release History
-_(Nothing yet)_
+0.2.0 - (8/28/2013) Initial beta release
