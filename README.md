@@ -57,4 +57,5 @@ $('#finder-container').html5finder({
 ```
 
 ## Release History
+0.2.1 - (9/13/2013) Add more selector options
 0.2.0 - (8/28/2013) Initial beta release

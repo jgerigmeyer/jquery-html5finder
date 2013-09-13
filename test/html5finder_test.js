@@ -25,7 +25,7 @@
     module('init', {
         setup: function () {
             this.container = $('#qunit-fixture');
-            this.finder = this.container.find('.finder');
+            this.finder = this.container.find('.finder-body');
             this.opts = {test: 'opts'};
             this.methods = this.container.html5finder('exposeMethods');
             this.stubs = {
@@ -75,7 +75,7 @@
     module('markSelected', {
         setup: function () {
             this.container = $('#qunit-fixture');
-            this.finder = this.container.find('.finder');
+            this.finder = this.container.find('.finder-body');
             this.finder.html('<input type="radio" class="checked" checked><input type="radio" class="not-checked">');
         }
     });
@@ -98,7 +98,7 @@
     module('updateNumberCols', {
         setup: function () {
             this.container = $('#qunit-fixture');
-            this.finder = this.container.find('.finder');
+            this.finder = this.container.find('.finder-body');
             this.finder.html('<section></section><section></section>');
         }
     });
@@ -115,7 +115,7 @@
     module('horzScroll', {
         setup: function () {
             this.container = $('#qunit-fixture');
-            this.finder = this.container.find('.finder');
+            this.finder = this.container.find('.finder-body');
             this.finder.html('<section><input type="radio" class="finderinput" checked></section>');
             this.scrollStub = sinon.stub(this.finder, 'animate');
         },
@@ -161,7 +161,7 @@
     module('addItems', {
         setup: function () {
             this.container = $('#qunit-fixture');
-            this.finder = this.container.find('.finder').html('<section><div></div></section>');
+            this.finder = this.container.find('.finder-body').html('<section><div></div></section>');
             this.itemData = {
                 "data": [
                     {
@@ -178,7 +178,7 @@
             };
             this.itemTpl = Handlebars.compile('<div class="{{colname}}">{{#each data}}{{code}} {{has_children}} {{name}}{{/each}}</div>');
             this.opts = {
-                scrollContainer: '.finder',
+                scrollContainer: '.finder-body',
                 itemTplFn: function (data) {
                     var itemTpl = Handlebars.compile('<div class="{{colname}}">{{#each data}}{{code}} {{has_children}} {{name}}{{/each}}</div>');
                     return $($.parseHTML(itemTpl(data)));
@@ -227,7 +227,7 @@
     module('attachHandler', {
         setup: function () {
             this.container = $('#qunit-fixture');
-            this.finder = this.container.find('.finder').html('<div class="finderinput">');
+            this.finder = this.container.find('.finder-body').html('<div class="finderinput">');
             this.opts = {test: 'opts'};
             this.methods = this.container.html5finder('exposeMethods');
             this.itemClickStub = sinon.stub(this.methods, 'itemClick');
@@ -251,14 +251,14 @@
     module('itemClick: clicking already-selected input', {
         setup: function () {
             this.container = $('#qunit-fixture');
-            this.finder = this.container.find('.finder');
+            this.finder = this.container.find('.finder-body');
             this.section = $('<section>').appendTo(this.finder);
             this.otherSection = this.section.clone().appendTo(this.finder);
             this.item = $('<input type="radio" value="test" class="finderinput">').appendTo(this.section);
             this.otherItem = this.item.clone().appendTo(this.otherSection);
             this.item.data('selected', true);
             this.opts = {
-                scrollContainer: '.finder',
+                scrollContainer: '.finder-body',
                 sectionSelector: 'section'
             };
             this.methods = this.container.html5finder('exposeMethods');
@@ -355,13 +355,13 @@
     module('itemClick: clicking input without children (last-child section)', {
         setup: function () {
             this.container = $('#qunit-fixture');
-            this.finder = this.container.find('.finder');
+            this.finder = this.container.find('.finder-body');
             this.section = $('<section>').appendTo(this.finder);
             this.otherSection = this.section.clone().appendTo(this.finder);
             this.item = $('<input type="radio" value="test" class="finderinput">').appendTo(this.section);
             this.otherItem = this.item.clone().appendTo(this.otherSection);
             this.opts = {
-                scrollContainer: '.finder',
+                scrollContainer: '.finder-body',
                 sectionSelector: 'section'
             };
             this.methods = this.container.html5finder('exposeMethods');
@@ -419,14 +419,14 @@
     module('itemClick: clicking input with children', {
         setup: function () {
             this.container = $('#qunit-fixture');
-            this.finder = this.container.find('.finder');
+            this.finder = this.container.find('.finder-body');
             this.section = $('<section>').appendTo(this.finder);
             this.otherSection = this.section.clone().appendTo(this.finder);
             this.item = $('<input type="radio" value="test" data-url="/test/url/" data-children="true" class="finderinput">').appendTo(this.section);
             this.otherItem = this.item.clone().appendTo(this.otherSection);
             this.columnTpl = Handlebars.compile('<section>{{colname}}</section>');
             this.opts = {
-                scrollContainer: '.finder',
+                scrollContainer: '.finder-body',
                 sectionSelector: 'section',
                 columnTplFn: function (data) {
                     var columnTpl = Handlebars.compile('<section>{{colname}}</section>');

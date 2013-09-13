@@ -1,4 +1,4 @@
-/*! HTML5 Finder - v0.2.0 - 2013-08-28
+/*! HTML5 Finder - v0.2.1 - 2013-09-13
 * https://github.com/jgerigmeyer/jquery-html5finder
 * Copyright (c) 2013 Jonny Gerig Meyer; Licensed MIT */
 (function ($) {
@@ -11,7 +11,7 @@
         init: function (opts) {
             var options = $.extend({}, $.fn.html5finder.defaults, opts);
             var context = $(this);
-            var finder = context.find('.finder');
+            var finder = context.find(options.finderSelector);
             var numberCols = finder.find(options.sectionSelector).length || 1;
 
             methods.updateNumberCols(finder, numberCols);
@@ -160,6 +160,7 @@
         scrollSpeed: 500,                   // Speed of the scroll (in ms)
         selected: 'input:checked',          // A selected element
         notSelected: 'input:not(:checked)', // An unselected element
+        finderSelector: '.finder-body',     // Finder container
         headerSelector: 'header',           // Section headers
         sectionSelector: null,              // Sections
         sectionContentSelector: null,       // Content to be replaced by Ajax function
