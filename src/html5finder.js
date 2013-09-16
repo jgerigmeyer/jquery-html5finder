@@ -1,5 +1,5 @@
 /*
- * jQuery html5finder 0.2.1
+ * jQuery html5finder 0.2.2
  * https://github.com/jgerigmeyer/jquery-html5finder
  *
  * Copyright (c) 2013, Jonny Gerig Meyer
@@ -64,6 +64,9 @@
             if (options.loading === true) {
                 newCol.loadingOverlay('remove');
             }
+            if (options.itemsAddedCallback) {
+                options.itemsAddedCallback(items);
+            }
         },
 
         attachHandler: function (context, finder, opts) {
@@ -93,8 +96,8 @@
                 numberCols = finder.find(options.sectionSelector).length;
                 methods.updateNumberCols(finder, numberCols);
                 methods.horzScroll(finder, scrollCont, opts);
-                if (thisItem.data('children') && options.callback) {
-                    options.callback();
+                if (thisItem.data('children') && options.itemSelectedCallback) {
+                    options.itemSelectedCallback(thisItem);
                 }
             } else {
                 // Last-child section (input with no children) only receives focus on-click by default
@@ -103,8 +106,8 @@
                     container.nextAll(options.sectionSelector).remove();
                     numberCols = finder.find(options.sectionSelector).length;
                     methods.updateNumberCols(finder, numberCols);
-                    if (options.lastChildCallback) {
-                        options.lastChildCallback(thisItem);
+                    if (options.lastChildSelectedCallback) {
+                        options.lastChildSelectedCallback(thisItem);
                     }
                 } else {
                     numberCols = container.prevAll(options.sectionSelector).addBack().removeClass('focus').length + 1;
@@ -131,8 +134,8 @@
                             'json'
                         );
                     }
-                    if (options.callback) {
-                        options.callback();
+                    if (options.itemSelectedCallback) {
+                        options.itemSelectedCallback(thisItem);
                     }
                 }
                 methods.markSelected(finder, opts);
@@ -172,8 +175,9 @@
         sectionSelector: null,              // Sections
         sectionContentSelector: null,       // Content to be replaced by Ajax function
         itemSelector: '.finderinput',       // Selector for items in each section
-        callback: null,                     // Callback function, currently runs after input in any section (except lastChild) is selected
-        lastChildCallback: null,            // Callback function, currently runs after input in last section is selected
+        itemSelectedCallback: null,         // Callback function,  runs after input in any section (except lastChild) is selected
+        lastChildSelectedCallback: null,    // Callback function,  runs after input in last section is selected
+        itemsAddedCallback: null,           // Callback function,  runs after new items are added
         sortLinkSelector: '.sortlink'       // Selector for link (in header) to sort items in that column
     };
 }(jQuery));

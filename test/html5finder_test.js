@@ -223,6 +223,14 @@
         ok(this.column.loadingOverlay.calledWith('remove'), 'loadingOverlay was called with "remove" arg');
     });
 
+    test('calls itemsAddedCallback', 1, function () {
+        var callback = sinon.spy();
+        this.opts.itemsAddedCallback = callback;
+        this.container.html5finder('addItems', this.itemData, 'column-name', this.column, this.container, this.finder, this.opts);
+
+        ok(callback.calledOnce, 'itemsAddedCallback was called once');
+    });
+
 
     module('attachHandler', {
         setup: function () {
@@ -334,21 +342,21 @@
         ok(this.stubs.horzScroll.calledWith(this.finder, this.finder, this.opts), 'horzScroll called with correct args');
     });
 
-    test('calls callback', 1, function () {
+    test('calls itemSelectedCallback', 1, function () {
         var callback = sinon.spy();
-        this.opts.callback = callback;
+        this.opts.itemSelectedCallback = callback;
         this.item.data('children', true);
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
 
-        ok(callback.calledOnce, 'callback was called once');
+        ok(callback.calledOnce, 'itemSelectedCallback was called once');
     });
 
-    test('does not call callback if item has no children', 1, function () {
+    test('does not call itemSelectedCallback if item has no children', 1, function () {
         var callback = sinon.spy();
-        this.opts.callback = callback;
+        this.opts.itemSelectedCallback = callback;
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
 
-        ok(!callback.called, 'callback was not called');
+        ok(!callback.called, 'itemSelectedCallback was not called');
     });
 
 
@@ -406,13 +414,13 @@
         ok(this.stubs.updateNumberCols.calledWith(this.finder, 1), 'updateNumberCols called with finder and new number of sections');
     });
 
-    test('calls lastChildCallback', 2, function () {
+    test('calls lastChildSelectedCallback', 2, function () {
         var callback = sinon.spy();
-        this.opts.lastChildCallback = callback;
+        this.opts.lastChildSelectedCallback = callback;
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
 
-        ok(callback.calledOnce, 'callback was called once');
-        ok(callback.calledWith(this.item), 'callback was passed clicked item');
+        ok(callback.calledOnce, 'lastChildSelectedCallback was called once');
+        ok(callback.calledWith(this.item), 'lastChildSelectedCallback was passed clicked item');
     });
 
 
@@ -517,10 +525,10 @@
 
     test('calls callback', 1, function () {
         var callback = sinon.spy();
-        this.opts.callback = callback;
+        this.opts.itemSelectedCallback = callback;
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
 
-        ok(callback.calledOnce, 'callback was called once');
+        ok(callback.calledOnce, 'itemSelectedCallback was called once');
     });
 
     test('calls markSelected', 2, function () {
