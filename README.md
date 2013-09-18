@@ -57,6 +57,7 @@ $('#finder-container').html5finder({
 ```
 
 ## Release History
+0.2.3rc2 - (9/17/2013) Fix bug with loadingOverlay not being removed when using cached data
 0.2.3rc1 - (9/17/2013) Add better loadingOverlay handling; cache option
 0.2.2 - (9/16/2013) Add itemsAddedCallback option
 0.2.1 - (9/13/2013) Add more selector options

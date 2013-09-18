@@ -1,4 +1,4 @@
-/*! HTML5 Finder - v0.2.3rc1 - 2013-09-17
+/*! HTML5 Finder - v0.2.3rc2 - 2013-09-17
 * https://github.com/jgerigmeyer/jquery-html5finder
 * Copyright (c) 2013 Jonny Gerig Meyer; Licensed MIT */
 (function ($) {
@@ -103,13 +103,13 @@
                     newCol = options.columnTplFn({colname: colName});
                     container.nextAll(options.sectionSelector).remove();
                     container.after(newCol);
-                    // Add a loading screen while waiting for the Ajax call to return data
-                    if (options.loading) { newCol.loadingOverlay(); }
                     // Use cached data, if exists (and ``option.cache: true``)
                     if (options.cache && cache[thisItem.attr('id')]) {
                         var response = cache[thisItem.attr('id')];
                         methods.addItems(response, colName, newCol, context, finder, opts);
                     } else {
+                        // Add a loading screen while waiting for the Ajax call to return data
+                        if (options.loading) { newCol.loadingOverlay(); }
                         $.when($.get(ajaxUrl)).done(function (response) {
                             // Add returned data to the next section
                             cache[thisItem.attr('id')] = response;
