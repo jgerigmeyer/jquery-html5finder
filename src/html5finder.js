@@ -1,5 +1,5 @@
 /*
- * jQuery html5finder 0.2.2
+ * jQuery html5finder 0.2.3rc1
  * https://github.com/jgerigmeyer/jquery-html5finder
  *
  * Copyright (c) 2013, Jonny Gerig Meyer
@@ -41,13 +41,14 @@
         // Scrolls to the previous section (so that the active section is centered)
         horzScroll: function (finder, scrollCont, opts) {
             var options = $.extend({}, $.fn.html5finder.defaults, opts);
-            if (options.horizontalScroll === true) {
+            if (options.horizontalScroll) {
                 var scrollTarget;
                 var currentScroll = scrollCont.scrollLeft();
-                if (!finder.find(options.sectionSelector + '.focus').prev(options.sectionSelector).length) {
+                var prevSection = finder.find(options.sectionSelector + '.focus').prev(options.sectionSelector);
+                if (!prevSection.length) {
                     scrollTarget = 0;
                 } else {
-                    scrollTarget = currentScroll + finder.find(options.sectionSelector + '.focus').prev(options.sectionSelector).position().left;
+                    scrollTarget = currentScroll + prevSection.position().left;
                 }
                 scrollCont.animate({scrollLeft: scrollTarget});
             }
@@ -61,12 +62,7 @@
             items = options.itemTplFn(data);
             newCol.find(options.sectionContentSelector).html(items);
             methods.horzScroll(finder, scrollCont, opts);
-            if (options.loading === true) {
-                newCol.loadingOverlay('remove');
-            }
-            if (options.itemsAddedCallback) {
-                options.itemsAddedCallback(items);
-            }
+            if (options.itemsAddedCallback) { options.itemsAddedCallback(items); }
         },
 
         attachHandler: function (context, finder, opts) {
@@ -106,9 +102,7 @@
                     container.nextAll(options.sectionSelector).remove();
                     numberCols = finder.find(options.sectionSelector).length;
                     methods.updateNumberCols(finder, numberCols);
-                    if (options.lastChildSelectedCallback) {
-                        options.lastChildSelectedCallback(thisItem);
-                    }
+                    if (options.lastChildSelectedCallback) { options.lastChildSelectedCallback(thisItem); }
                 } else {
                     numberCols = container.prevAll(options.sectionSelector).addBack().removeClass('focus').length + 1;
                     methods.updateNumberCols(finder, numberCols);
@@ -117,26 +111,21 @@
                     container.nextAll(options.sectionSelector).remove();
                     container.after(newCol);
                     // Add a loading screen while waiting for the Ajax call to return data
-                    if (options.loading === true) {
-                        newCol.loadingOverlay();
-                    }
-                    if (cache[thisItem.attr('id')]) {
+                    if (options.loading) { newCol.loadingOverlay(); }
+                    // Use cached data, if exists (and ``option.cache: true``)
+                    if (options.cache && cache[thisItem.attr('id')]) {
                         var response = cache[thisItem.attr('id')];
                         methods.addItems(response, colName, newCol, context, finder, opts);
                     } else {
-                        // Add returned data to the next section
-                        $.get(
-                            ajaxUrl,
-                            function (response) {
-                                cache[thisItem.attr('id')] = response;
-                                methods.addItems(response, colName, newCol, context, finder, opts);
-                            },
-                            'json'
-                        );
+                        $.when($.get(ajaxUrl)).done(function (response) {
+                            // Add returned data to the next section
+                            cache[thisItem.attr('id')] = response;
+                            methods.addItems(response, colName, newCol, context, finder, opts);
+                        }).always(function () {
+                            if (options.loading) { newCol.loadingOverlay('remove'); }
+                        });
                     }
-                    if (options.itemSelectedCallback) {
-                        options.itemSelectedCallback(thisItem);
-                    }
+                    if (options.itemSelectedCallback) { options.itemSelectedCallback(thisItem); }
                 }
                 methods.markSelected(finder, opts);
             }
@@ -178,6 +167,7 @@
         itemSelectedCallback: null,         // Callback function,  runs after input in any section (except lastChild) is selected
         lastChildSelectedCallback: null,    // Callback function,  runs after input in last section is selected
         itemsAddedCallback: null,           // Callback function,  runs after new items are added
-        sortLinkSelector: '.sortlink'       // Selector for link (in header) to sort items in that column
+        sortLinkSelector: '.sortlink',      // Selector for link (in header) to sort items in that column
+        cache: true                         // If true, ajax response data will be cached
     };
 }(jQuery));

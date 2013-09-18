@@ -215,14 +215,6 @@
         ok(this.scrollStub.calledWith(this.finder, this.finder, this.opts), 'horzScroll was called with correct args');
     });
 
-    test('loadingOverlay is removed from newCol', 2, function () {
-        this.opts.loading = true;
-        this.container.html5finder('addItems', this.itemData, 'column-name', this.column, this.container, this.finder, this.opts);
-
-        ok(this.column.loadingOverlay.calledOnce, 'loadingOverlay was called once');
-        ok(this.column.loadingOverlay.calledWith('remove'), 'loadingOverlay was called with "remove" arg');
-    });
-
     test('calls itemsAddedCallback', 1, function () {
         var callback = sinon.spy();
         this.opts.itemsAddedCallback = callback;
@@ -439,7 +431,8 @@
                 columnTplFn: function (data) {
                     var columnTpl = Handlebars.compile('<section>{{colname}}</section>');
                     return $($.parseHTML(columnTpl(data)));
-                }
+                },
+                cache: false
             };
             this.methods = this.container.html5finder('exposeMethods');
             this.stubs = {
@@ -507,20 +500,54 @@
         deepEqual(this.stubs.addItems.args[0][5], this.opts, 'addItems was passed opts');
     });
 
+    test('xhr success removes loadingOverlay from newCol', 2, function () {
+        $.fn.loadingOverlay = sinon.spy();
+        this.opts.loading = true;
+        this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
+        this.requests[0].respond(200, {'content-type': 'application/json'}, '{"test": "data"}');
+
+        ok(this.section.next('section').loadingOverlay.calledTwice, 'loadingOverlay was called twice');
+        strictEqual(this.section.next('section').loadingOverlay.args[1][0], 'remove', 'loadingOverlay was called with arg ``remove``');
+
+        delete $.fn.loadingOverlay;
+    });
+
+    test('xhr failure removes loadingOverlay from newCol', 2, function () {
+        $.fn.loadingOverlay = sinon.spy();
+        this.opts.loading = true;
+        this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
+        this.requests[0].respond(500);
+
+        ok(this.section.next('section').loadingOverlay.calledTwice, 'loadingOverlay was called twice');
+        strictEqual(this.section.next('section').loadingOverlay.args[1][0], 'remove', 'loadingOverlay was called with arg ``remove``');
+
+        delete $.fn.loadingOverlay;
+    });
+
     test('second click uses cached response data', 8, function () {
+        this.opts.cache = true;
         this.item.attr('id', 'test-id');
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
         this.requests[0].respond(200, {'content-type': 'application/json'}, '{"test": "data"}');
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
 
         strictEqual(this.requests.length, 1, 'only one xhr request was made');
-        ok(this.stubs.addItems.calledTwice, 'addItems was called once');
+        ok(this.stubs.addItems.calledTwice, 'addItems was called twice');
         deepEqual(this.stubs.addItems.args[1][0], {test: 'data'}, 'addItems was passed response from cache');
         strictEqual(this.stubs.addItems.args[1][1], 'col2', 'addItems was passed new section name');
         ok(this.stubs.addItems.args[1][2].is(this.section.next('section')), 'addItems was passed new section');
         ok(this.stubs.addItems.args[1][3].is(this.container), 'addItems was passed context');
         ok(this.stubs.addItems.args[1][4].is(this.finder), 'addItems was passed finder');
         deepEqual(this.stubs.addItems.args[1][5], this.opts, 'addItems was passed opts');
+    });
+
+    test('second click does not use cached response data if ``options.cached: false``', 1, function () {
+        this.item.attr('id', 'test-id');
+        this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
+        this.requests[0].respond(200, {'content-type': 'application/json'}, '{"test": "data"}');
+        this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
+
+        strictEqual(this.requests.length, 2, 'two xhr requests were made');
     });
 
     test('calls callback', 1, function () {

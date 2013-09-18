@@ -57,6 +57,7 @@ $('#finder-container').html5finder({
 ```
 
 ## Release History
+0.2.3rc1 - (9/17/2013) Add better loadingOverlay handling; cache option
 0.2.2 - (9/16/2013) Add itemsAddedCallback option
 0.2.1 - (9/13/2013) Add more selector options
 0.2.0 - (8/28/2013) Initial beta release
