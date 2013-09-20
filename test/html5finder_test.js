@@ -227,24 +227,79 @@
     module('attachHandler', {
         setup: function () {
             this.container = $('#qunit-fixture');
-            this.finder = this.container.find('.finder-body').html('<div class="finderinput">');
-            this.opts = {test: 'opts'};
+            this.finder = this.container.find('.finder-body');
+            this.section = $('<section>').appendTo(this.finder);
+            this.otherSection = this.section.clone().addClass('focus').appendTo(this.finder);
+            this.item = $('<input id="test-input" type="radio" value="test" class="finderinput">').appendTo(this.section);
+            this.label = $('<label for="test-input" class="finderselect">').appendTo(this.section);
+            this.opts = {
+                scrollContainer: '.finder-body',
+                sectionSelector: 'section'
+            };
             this.methods = this.container.html5finder('exposeMethods');
             this.itemClickStub = sinon.stub(this.methods, 'itemClick');
+            this.horzScrollStub = sinon.stub(this.methods, 'horzScroll');
+            this.container.html5finder('attachHandler', this.container, this.finder, this.opts);
         },
         teardown: function () {
             this.itemClickStub.restore();
+            this.horzScrollStub.restore();
         }
     });
 
-    test('calls itemClick on click event', 4, function () {
-        this.container.html5finder('attachHandler', 'context', this.finder, this.opts);
-        this.finder.find('.finderinput').trigger('click');
+    test('calls itemClick on input click event', 4, function () {
+        this.item.trigger('click');
 
         ok(this.itemClickStub.calledOnce, 'itemClick was called once');
-        ok(this.itemClickStub.calledWith('context', this.finder), 'itemClick was passed context and finder');
-        ok(this.itemClickStub.args[0][2].is(this.finder.find('.finderinput')), 'itemClick was passed clicked input');
+        ok(this.itemClickStub.calledWith(this.container, this.finder), 'itemClick was passed context and finder');
+        ok(this.itemClickStub.args[0][2].is(this.item), 'itemClick was passed clicked input');
         deepEqual(this.itemClickStub.args[0][3], this.opts, 'itemClick was passed opts');
+    });
+
+    test('calls horzScroll on :disabled input label click event', 2, function () {
+        this.item.attr('disabled', true);
+        this.label.trigger('click');
+
+        ok(this.horzScrollStub.calledOnce, 'horzScroll was called once');
+        ok(this.horzScrollStub.calledWith(this.finder, this.finder, this.opts), 'horzScroll was passed finder, scrollContainer, opts');
+    });
+
+    test('does not call horzScroll on non-disabled input label click event', 1, function () {
+        this.label.trigger('click');
+
+        ok(!this.horzScrollStub.called, 'horzScroll was not called');
+    });
+
+    test('gives section .focus on :disabled input label click event', 2, function () {
+        ok(this.finder.find('.focus').is(this.otherSection), 'other-section has .focus');
+
+        this.item.attr('disabled', true);
+        this.label.trigger('click');
+
+        ok(this.finder.find('.focus').is(this.section), 'this section has focus');
+    });
+
+    test('gives section .focus on section (not input or label) click event', 2, function () {
+        ok(this.finder.find('.focus').is(this.otherSection), 'other-section has .focus');
+
+        $('<div>').appendTo(this.section).trigger('click');
+
+        ok(this.finder.find('.focus').is(this.section), 'this section has focus');
+    });
+
+    test('does not give section .focus on section child input or label click event', 2, function () {
+        ok(this.finder.find('.focus').is(this.otherSection), 'other section has .focus');
+
+        $('<input>').appendTo(this.section).trigger('click');
+
+        ok(this.finder.find('.focus').is(this.otherSection), 'other section still has focus');
+    });
+
+    test('calls horzScroll on section (not input or label) click event', 2, function () {
+        $('<div>').appendTo(this.section).trigger('click');
+
+        ok(this.horzScrollStub.calledOnce, 'horzScroll was called once');
+        ok(this.horzScrollStub.calledWith(this.finder, this.finder, this.opts), 'horzScroll was passed finder, scrollContainer, opts');
     });
 
 
@@ -367,12 +422,14 @@
             this.methods = this.container.html5finder('exposeMethods');
             this.stubs = {
                 updateNumberCols: sinon.stub(this.methods, 'updateNumberCols'),
-                markSelected: sinon.stub(this.methods, 'markSelected')
+                markSelected: sinon.stub(this.methods, 'markSelected'),
+                horzScroll: sinon.stub(this.methods, 'horzScroll')
             };
         },
         teardown: function () {
             this.stubs.updateNumberCols.restore();
             this.stubs.markSelected.restore();
+            this.stubs.horzScroll.restore();
         }
     });
 
@@ -404,6 +461,13 @@
 
         ok(this.stubs.updateNumberCols.calledOnce, 'updateNumberCols was called once');
         ok(this.stubs.updateNumberCols.calledWith(this.finder, 1), 'updateNumberCols called with finder and new number of sections');
+    });
+
+    test('calls horzScroll with scrollContainer', 2, function () {
+        this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
+
+        ok(this.stubs.horzScroll.calledOnce, 'horzScroll was called once');
+        ok(this.stubs.horzScroll.calledWith(this.finder, this.finder, this.opts), 'horzScroll called with finder, scrollContainer, and opts');
     });
 
     test('calls lastChildSelectedCallback', 2, function () {

@@ -1,4 +1,4 @@
-/*! HTML5 Finder - v0.2.3rc2 - 2013-09-17
+/*! HTML5 Finder - v0.2.3rc3 - 2013-09-20
 * https://github.com/jgerigmeyer/jquery-html5finder
 * Copyright (c) 2013 Jonny Gerig Meyer; Licensed MIT */
 (function ($) {
@@ -60,8 +60,26 @@
 
         attachHandler: function (context, finder, opts) {
             var options = $.extend({}, $.fn.html5finder.defaults, opts);
+            var scrollCont = context.find(options.scrollContainer);
             finder.on('click', options.itemSelector, function () {
                 methods.itemClick(context, finder, $(this), opts);
+            });
+            // Clicking a disabled input adds focus to that section
+            finder.on('click', options.labelSelector, function () {
+                var el = $(this);
+                var section = el.closest(options.sectionSelector);
+                if (section.find('#' + el.attr('for')).is(':disabled')) {
+                    section.addClass('focus').siblings(options.sectionSelector).removeClass('focus');
+                    methods.horzScroll(finder, scrollCont, opts);
+                }
+            });
+            // Clicking empty space in the section (not input or label) adds focus to section
+            finder.on('click', options.sectionSelector, function (e) {
+                var section = $(this);
+                if (!$(e.target).is('input, label')) {
+                    section.addClass('focus').siblings(options.sectionSelector).removeClass('focus');
+                    methods.horzScroll(finder, scrollCont, opts);
+                }
             });
         },
 
@@ -95,6 +113,7 @@
                     container.nextAll(options.sectionSelector).remove();
                     numberCols = finder.find(options.sectionSelector).length;
                     methods.updateNumberCols(finder, numberCols);
+                    methods.horzScroll(finder, scrollCont, opts);
                     if (options.lastChildSelectedCallback) { options.lastChildSelectedCallback(thisItem); }
                 } else {
                     numberCols = container.prevAll(options.sectionSelector).addBack().removeClass('focus').length + 1;
@@ -157,6 +176,7 @@
         sectionSelector: null,              // Sections
         sectionContentSelector: null,       // Content to be replaced by Ajax function
         itemSelector: '.finderinput',       // Selector for items in each section
+        labelSelector: '.finderselect',     // Selector for item labels in each section
         itemSelectedCallback: null,         // Callback function,  runs after input in any section (except lastChild) is selected
         lastChildSelectedCallback: null,    // Callback function,  runs after input in last section is selected
         itemsAddedCallback: null,           // Callback function,  runs after new items are added
