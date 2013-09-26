@@ -302,6 +302,13 @@
         ok(this.horzScrollStub.calledWith(this.finder, this.finder, this.opts), 'horzScroll was passed finder, scrollContainer, opts');
     });
 
+    test('does not call horzScroll on label child element click event', 1, function () {
+        var child = $('<div>').appendTo(this.label);
+        child.trigger('click');
+
+        ok(!this.horzScrollStub.called, 'horzScroll was not called');
+    });
+
 
     module('itemClick: clicking already-selected input', {
         setup: function () {

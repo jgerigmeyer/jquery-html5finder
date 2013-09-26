@@ -1,4 +1,4 @@
-/*! HTML5 Finder - v0.2.3rc3 - 2013-09-20
+/*! HTML5 Finder - v0.2.3rc4 - 2013-09-26
 * https://github.com/jgerigmeyer/jquery-html5finder
 * Copyright (c) 2013 Jonny Gerig Meyer; Licensed MIT */
 (function ($) {
@@ -65,13 +65,14 @@
                 methods.itemClick(context, finder, $(this), opts);
             });
             // Clicking a disabled input adds focus to that section
-            finder.on('click', options.labelSelector, function () {
+            finder.on('click', options.labelSelector, function (e) {
                 var el = $(this);
                 var section = el.closest(options.sectionSelector);
                 if (section.find('#' + el.attr('for')).is(':disabled')) {
                     section.addClass('focus').siblings(options.sectionSelector).removeClass('focus');
                     methods.horzScroll(finder, scrollCont, opts);
                 }
+                e.stopPropagation();
             });
             // Clicking empty space in the section (not input or label) adds focus to section
             finder.on('click', options.sectionSelector, function (e) {
