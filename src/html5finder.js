@@ -1,5 +1,5 @@
 /*
- * jQuery html5finder 0.2.3rc4
+ * jQuery html5finder 1.0.dev1
  * https://github.com/jgerigmeyer/jquery-html5finder
  *
  * Copyright (c) 2013, Jonny Gerig Meyer
@@ -39,19 +39,32 @@
 
         // Define the function for horizontal scrolling:
         // Scrolls to the previous section (so that the active section is centered)
-        horzScroll: function (finder, scrollCont, opts) {
+        horzScroll: function (finder, scrollCont, opts, last) {
             var options = $.extend({}, $.fn.html5finder.defaults, opts);
+            var scroll = $.Deferred();
             if (options.horizontalScroll) {
-                var scrollTarget;
+                var scrollTarget = 0;
                 var currentScroll = scrollCont.scrollLeft();
-                var prevSection = finder.find(options.sectionSelector + '.focus').prev(options.sectionSelector);
-                if (!prevSection.length) {
-                    scrollTarget = 0;
-                } else {
+                var focusSection = finder.find(options.sectionSelector + '.focus');
+                var prevSection = focusSection.prev(options.sectionSelector);
+                if (prevSection.length) {
                     scrollTarget = currentScroll + prevSection.position().left;
+                    // If the active section is going to be the last section in the finder,
+                    // ...modify the scrollTarget so that nothing will be visible to the right
+                    // ...of the active section, instead of scrolling directly to prevSection.
+                    if (last) {
+                        scrollTarget = scrollTarget - (scrollCont.innerWidth() - focusSection.outerWidth() - prevSection.outerWidth());
+                    }
                 }
-                scrollCont.animate({scrollLeft: scrollTarget});
+                if (currentScroll === scrollTarget) {
+                    scroll.resolve();
+                } else {
+                    $.when(scrollCont.animate({scrollLeft: scrollTarget}, 'fast')).done(function () { scroll.resolve(); });
+                }
+            } else {
+                scroll.resolve();
             }
+            return scroll;
         },
 
         addItems: function (data, colName, newCol, context, finder, opts) {
@@ -106,11 +119,13 @@
                 } else {
                     target.addClass('focus').siblings(options.sectionSelector).removeClass('focus');
                 }
+                target.nextAll(options.sectionSelector).empty();
                 target.find('input:checked').removeAttr('checked').data('selected', false);
-                target.nextAll(options.sectionSelector).remove();
-                numberCols = finder.find(options.sectionSelector).length;
-                methods.updateNumberCols(finder, numberCols);
-                methods.horzScroll(finder, scrollCont, opts);
+                $.when(methods.horzScroll(finder, scrollCont, opts)).done(function () {
+                    target.nextAll(options.sectionSelector).remove();
+                    numberCols = finder.find(options.sectionSelector).length;
+                    methods.updateNumberCols(finder, numberCols);
+                });
                 if (thisItem.data('children') && options.itemSelectedCallback) {
                     options.itemSelectedCallback(thisItem);
                 }
@@ -118,32 +133,51 @@
                 // Last-child section (input with no children) only receives focus on-click by default
                 if (!thisItem.data('children')) {
                     container.addClass('focus').siblings(options.sectionSelector).removeClass('focus');
-                    container.nextAll(options.sectionSelector).remove();
-                    numberCols = finder.find(options.sectionSelector).length;
-                    methods.updateNumberCols(finder, numberCols);
-                    methods.horzScroll(finder, scrollCont, opts);
+                    $.when(methods.horzScroll(finder, scrollCont, opts, true)).done(function () {
+                        container.nextAll(options.sectionSelector).remove();
+                        numberCols = finder.find(options.sectionSelector).length;
+                        methods.updateNumberCols(finder, numberCols);
+                    });
                     if (options.lastChildSelectedCallback) { options.lastChildSelectedCallback(thisItem); }
                 } else {
-                    numberCols = container.prevAll(options.sectionSelector).addBack().removeClass('focus').length + 1;
-                    methods.updateNumberCols(finder, numberCols);
-                    colName = 'col' + numberCols.toString();
-                    newCol = options.columnTplFn({colname: colName});
-                    container.nextAll(options.sectionSelector).remove();
-                    container.after(newCol);
-                    // Use cached data, if exists (and ``option.cache: true``)
-                    if (options.cache && cache[thisItem.attr('id')]) {
-                        var response = cache[thisItem.attr('id')];
-                        methods.addItems(response, colName, newCol, context, finder, opts);
-                    } else {
-                        // Add a loading screen while waiting for the Ajax call to return data
-                        if (options.loading) { newCol.loadingOverlay(); }
-                        $.when($.get(ajaxUrl)).done(function (response) {
-                            // Add returned data to the next section
-                            cache[thisItem.attr('id')] = response;
+                    var addOrReplaceTargetCol = function () {
+                        numberCols = container.prevAll(options.sectionSelector).addBack().removeClass('focus').length + 1;
+                        methods.updateNumberCols(finder, numberCols);
+                        colName = 'col' + numberCols.toString();
+                        newCol = options.columnTplFn({colname: colName});
+                        if (target.length) {
+                            target.nextAll(options.sectionSelector).remove();
+                            target.replaceWith(newCol);
+                        } else {
+                            container.after(newCol);
+                        }
+                        // Use cached data, if exists (and ``option.cache: true``)
+                        if (options.cache && cache[thisItem.attr('id')]) {
+                            var response = cache[thisItem.attr('id')];
                             methods.addItems(response, colName, newCol, context, finder, opts);
-                        }).always(function () {
-                            if (options.loading) { newCol.loadingOverlay('remove'); }
+                        } else {
+                            // Add a loading screen while waiting for the Ajax call to return data
+                            if (options.loading) { newCol.loadingOverlay(); }
+                            $.when($.get(ajaxUrl)).done(function (response) {
+                                // Add returned data to the next section
+                                cache[thisItem.attr('id')] = response;
+                                methods.addItems(response, colName, newCol, context, finder, opts);
+                            }).always(function () {
+                                if (options.loading) { newCol.loadingOverlay('remove'); }
+                            });
+                        }
+                    };
+                    // If the target section already exists and doesn't have focus...
+                    if (target.length && !target.hasClass('focus')) {
+                        // First empty the target section and scroll, then add or replace target.
+                        target.nextAll(options.sectionSelector).addBack().empty();
+                        target.addClass('focus').siblings(options.sectionSelector).removeClass('focus');
+                        $.when(methods.horzScroll(finder, scrollCont, opts, true)).done(function () {
+                            addOrReplaceTargetCol();
                         });
+                    } else {
+                        // Otherwise, just add or replace target without scrolling.
+                        addOrReplaceTargetCol();
                     }
                     if (options.itemSelectedCallback) { options.itemSelectedCallback(thisItem); }
                 }

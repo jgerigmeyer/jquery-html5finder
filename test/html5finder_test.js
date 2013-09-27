@@ -125,6 +125,7 @@
     });
 
     test('horzScroll animates scrollCont to 0 when no sections have .focus', 2, function () {
+        sinon.stub(this.finder, 'scrollLeft', function () { return 10; });
         this.container.html5finder('horzScroll', this.finder, this.finder, {
             horizontalScroll: true,
             sectionSelector: 'section'
@@ -132,25 +133,60 @@
 
         ok(this.scrollStub.calledOnce, 'scrollCont.animate() was called once');
         ok(this.scrollStub.calledWith({scrollLeft: 0}), 'scrollCont.animate() was passed scrollTarget of 0');
+
+        this.finder.scrollLeft.restore();
     });
 
     test('horzScroll animates scrollCont to section before section.focus', 2, function () {
+        var prevSection = $('<section class="focus"><input type="radio" class="finderinput" checked></section>');
         sinon.stub(this.finder, 'scrollLeft', function () { return 10; });
-        this.finder.append('<section class="focus"><input type="radio" class="finderinput" checked></section>');
+        sinon.stub($.fn, 'position', function () { return {left: 10}; });
+        this.finder.append(prevSection);
         this.container.html5finder('horzScroll', this.finder, this.finder, {
             horizontalScroll: true,
             sectionSelector: 'section'
         });
 
         ok(this.scrollStub.calledOnce, 'scrollCont.animate() was called once');
-        ok(this.scrollStub.calledWith({scrollLeft: 10}), 'scrollCont.animate() was passed scrollTarget of 10');
+        ok(this.scrollStub.calledWith({scrollLeft: 20}), 'scrollCont.animate() was passed scrollTarget of 20');
 
         this.finder.scrollLeft.restore();
+        $.fn.position.restore();
+    });
+
+    test('animates scrollCont so that nothing is visible to the right of section.focus if .focus will be last section', 2, function () {
+        var prevSection = $('<section class="focus"><input type="radio" class="finderinput" checked></section>');
+        sinon.stub(this.finder, 'scrollLeft', function () { return 10; });
+        sinon.stub($.fn, 'position', function () { return {left: 10}; });
+        sinon.stub($.fn, 'innerWidth', function () { return 15; });
+        sinon.stub($.fn, 'outerWidth', function () { return 5; });
+        this.finder.append(prevSection);
+        this.container.html5finder('horzScroll', this.finder, this.finder, {
+            horizontalScroll: true,
+            sectionSelector: 'section'
+        }, true);
+
+        ok(this.scrollStub.calledOnce, 'scrollCont.animate() was called once');
+        ok(this.scrollStub.calledWith({scrollLeft: 15}), 'scrollCont.animate() was passed scrollTarget of 15');
+
+        this.finder.scrollLeft.restore();
+        $.fn.position.restore();
+        $.fn.innerWidth.restore();
+        $.fn.outerWidth.restore();
     });
 
     test('horzScroll does not animate scrollCont if options.horizontalScroll !== true', 1, function () {
         this.container.html5finder('horzScroll', this.finder, this.finder, {
             horizontalScroll: false,
+            sectionSelector: 'section'
+        });
+
+        ok(!this.scrollStub.called, 'scrollCont.animate() was not called');
+    });
+
+    test('horzScroll does not animate scrollCont if already scrolled to the correct place', 1, function () {
+        this.container.html5finder('horzScroll', this.finder, this.finder, {
+            horizontalScroll: true,
             sectionSelector: 'section'
         });
 
@@ -533,7 +569,17 @@
         ok(this.stubs.updateNumberCols.calledWith(this.finder, 2), 'updateNumberCols called with finder and new number of sections');
     });
 
+    test('replaces target with new section using passed template', 1, function () {
+        this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
+        var data = {colname: 'col2'};
+        var expected = $($.parseHTML(this.columnTpl(data))).html();
+        var actual = this.section.next('section').html();
+
+        strictEqual(actual, expected, 'new section was rendered and added after active section');
+    });
+
     test('renders new section using passed template', 1, function () {
+        this.otherSection.remove();
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
         var data = {colname: 'col2'};
         var expected = $($.parseHTML(this.columnTpl(data))).html();
