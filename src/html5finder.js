@@ -1,5 +1,5 @@
 /*
- * jQuery html5finder 1.0.dev1
+ * jQuery html5finder 1.0.dev2
  * https://github.com/jgerigmeyer/jquery-html5finder
  *
  * Copyright (c) 2013, Jonny Gerig Meyer
@@ -108,7 +108,7 @@
             var options = $.extend({}, $.fn.html5finder.defaults, opts);
             var scrollCont = context.find(options.scrollContainer);
             var container = thisItem.closest(options.sectionSelector);
-            var ajaxUrl = thisItem.data('url');
+            var ajaxUrl = options.getAjaxUrl(thisItem);
             var target = container.next(options.sectionSelector);
             var colName, newCol, numberCols;
 
@@ -223,6 +223,9 @@
         lastChildSelectedCallback: null,    // Callback function,  runs after input in last section is selected
         itemsAddedCallback: null,           // Callback function,  runs after new items are added
         sortLinkSelector: '.sortlink',      // Selector for link (in header) to sort items in that column
-        cache: true                         // If true, ajax response data will be cached
+        cache: true,                        // If true, ajax response data will be cached
+        getAjaxUrl: function (item) {       // Function that returns the ajax-url to get an item's children
+            return item.data('url');
+        }
     };
 }(jQuery));

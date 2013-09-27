@@ -59,6 +59,7 @@ $('#finder-container').html5finder({
 
 ## Release History
 
+* 1.0.dev2 - (9/27/2013) Add option for fn to get ajax-url for fetching an item's children
 * 1.0.dev1 - (9/27/2013) Fix bugs with scrolling
 * 0.2.3rc4 - (9/26/2013) Prevent clicks within label from triggering section-focus
 * 0.2.3rc3 - (9/20/2013) Clicking empty section space or label of disabled input adds focus to section
