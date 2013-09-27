@@ -643,7 +643,6 @@
 
     test('second click uses cached response data', 8, function () {
         this.opts.cache = true;
-        this.item.attr('id', 'test-id');
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
         this.requests[0].respond(200, {'content-type': 'application/json'}, '{"test": "data"}');
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
