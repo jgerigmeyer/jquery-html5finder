@@ -76,14 +76,14 @@
         setup: function () {
             this.container = $('#qunit-fixture');
             this.finder = this.container.find('.finder-body');
-            this.finder.html('<input type="radio" class="checked" checked><input type="radio" class="not-checked">');
+            this.finder.html('<input type="radio" class="checked finderinput" checked /><input type="radio" class="not-checked finderinput" />');
         }
     });
 
     test('markSelected sets data-selected on checked inputs', 4, function () {
         var checked = this.finder.find('.checked');
         var notChecked = this.finder.find('.not-checked');
-        notChecked.data('selected', true);
+        notChecked.attr('data-selected', true);
 
         ok(!checked.data('selected'), 'checked input does not have data-selected before fn is called');
         ok(notChecked.data('selected'), 'unchecked input has data-selected before fn is called');
@@ -354,7 +354,7 @@
             this.otherSection = this.section.clone().appendTo(this.finder);
             this.item = $('<input type="radio" value="test" class="finderinput">').appendTo(this.section);
             this.otherItem = this.item.clone().appendTo(this.otherSection);
-            this.item.data('selected', true);
+            this.item.attr('data-selected', true);
             this.opts = {
                 scrollContainer: '.finder-body',
                 sectionSelector: 'section'
@@ -396,7 +396,7 @@
     });
 
     test('unchecks inputs in other sections', 4, function () {
-        this.otherItem.attr('checked', true).data('selected', true);
+        this.otherItem.attr('checked', true).attr('data-selected', true);
 
         ok(this.otherItem.attr('checked'), 'input in other section is checked');
         ok(this.otherItem.data('selected'), 'input in other section has data-selected == true');

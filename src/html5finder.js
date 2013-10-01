@@ -1,5 +1,5 @@
 /*
- * jQuery html5finder 1.0.dev3
+ * jQuery html5finder 1.0.dev4
  * https://github.com/jgerigmeyer/jquery-html5finder
  *
  * Copyright (c) 2013, Jonny Gerig Meyer
@@ -29,8 +29,8 @@
         // We want to be able to treat already-selected items differently
         markSelected: function (finder, opts) {
             var options = $.extend({}, $.fn.html5finder.defaults, opts);
-            finder.find(options.selected).data('selected', true);
-            finder.find(options.notSelected).data('selected', false);
+            finder.find(options.itemSelector).filter(options.selected).attr('data-selected', true).attr('checked', 'checked').data('selected', true);
+            finder.find(options.itemSelector).filter(options.notSelected).removeAttr('checked data-selected').data('selected', false);
         },
 
         updateNumberCols: function (finder, numberCols) {
@@ -120,7 +120,7 @@
                     target.addClass('focus').siblings(options.sectionSelector).removeClass('focus');
                 }
                 target.nextAll(options.sectionSelector).empty();
-                target.find('input:checked').removeAttr('checked').data('selected', false);
+                target.find(options.itemSelector).filter(options.selected).removeAttr('checked data-selected').data('selected', false);
                 $.when(methods.horzScroll(finder, scrollCont, opts)).done(function () {
                     target.nextAll(options.sectionSelector).remove();
                     numberCols = finder.find(options.sectionSelector).length;
