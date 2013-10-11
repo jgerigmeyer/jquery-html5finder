@@ -1,4 +1,4 @@
-/*! HTML5 Finder - v1.0.dev4 - 2013-10-01
+/*! HTML5 Finder - v1.0.0 - 2013-10-11
 * https://github.com/jgerigmeyer/jquery-html5finder
 * Copyright (c) 2013 Jonny Gerig Meyer; Licensed MIT */
 (function ($) {
@@ -17,6 +17,8 @@
             methods.updateNumberCols(finder, numberCols);
             methods.markSelected(finder, opts);
             methods.attachHandler(context, finder, opts);
+
+            return context;
         },
 
         // We want to be able to treat already-selected items differently

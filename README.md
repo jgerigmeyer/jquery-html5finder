@@ -59,6 +59,7 @@ $('#finder-container').html5finder({
 
 ## Release History
 
+* 1.0.0 - (10/11/2013) Make plugin chainable; major version release
 * 1.0.dev4 - (10/1/2013) More specific item selectors
 * 1.0.dev3 - (9/27/2013) Cache based on url instead of item id
 * 1.0.dev2 - (9/27/2013) Add option for fn to get ajax-url for fetching an item's children

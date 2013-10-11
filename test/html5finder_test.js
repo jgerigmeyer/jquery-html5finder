@@ -41,6 +41,10 @@
         }
     });
 
+    test('init is chainable', 1, function () {
+        ok(this.container.html5finder().is(this.container), 'is chainable');
+    });
+
     test('calls updateNumberCols', 2, function () {
         this.container.html5finder(this.opts);
 

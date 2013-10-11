@@ -1,5 +1,5 @@
 /*
- * jQuery html5finder 1.0.dev4
+ * jQuery html5finder
  * https://github.com/jgerigmeyer/jquery-html5finder
  *
  * Copyright (c) 2013, Jonny Gerig Meyer
@@ -24,6 +24,8 @@
             methods.updateNumberCols(finder, numberCols);
             methods.markSelected(finder, opts);
             methods.attachHandler(context, finder, opts);
+
+            return context;
         },
 
         // We want to be able to treat already-selected items differently
