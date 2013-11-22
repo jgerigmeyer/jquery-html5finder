@@ -1,4 +1,4 @@
-/*! HTML5 Finder - v1.0.0 - 2013-10-11
+/*! HTML5 Finder - v1.0.1 - 2013-11-22
 * https://github.com/jgerigmeyer/jquery-html5finder
 * Copyright (c) 2013 Jonny Gerig Meyer; Licensed MIT */
 (function ($) {
@@ -59,7 +59,7 @@
             } else {
                 scroll.resolve();
             }
-            return scroll;
+            return scroll.promise();
         },
 
         addItems: function (data, colName, newCol, context, finder, opts) {

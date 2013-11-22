@@ -64,6 +64,16 @@ module.exports = function(grunt) {
         src: ['test/**/*.js']
       },
     },
+    complexity: {
+      js: {
+        src: '<%= qunit.options.coverage.src %>',
+        options: {
+            cyclomatic: 10,
+            halstead: 20,
+            maintainability: 100
+        }
+      }
+    },
     watch: {
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
@@ -87,8 +97,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-qunit-istanbul');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-complexity');
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'qunit', 'clean', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'qunit', 'clean', 'concat', 'uglify', 'complexity']);
 
 };

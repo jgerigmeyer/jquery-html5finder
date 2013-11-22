@@ -66,7 +66,7 @@
             } else {
                 scroll.resolve();
             }
-            return scroll;
+            return scroll.promise();
         },
 
         addItems: function (data, colName, newCol, context, finder, opts) {
