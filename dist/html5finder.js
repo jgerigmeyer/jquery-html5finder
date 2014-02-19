@@ -1,4 +1,4 @@
-/*! HTML5 Finder - v1.0.1 - 2014-02-19
+/*! HTML5 Finder - v1.0.2 - 2014-02-19
 * https://github.com/jgerigmeyer/jquery-html5finder
 * Copyright (c) 2014 Jonny Gerig Meyer; Licensed MIT */
 (function ($) {

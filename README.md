@@ -59,6 +59,7 @@ $('#finder-container').html5finder({
 
 ## Release History
 
+* 1.0.2 - (02/19/2014) Add bower.json
 * 1.0.1 - (11/22/2013) Return promise instead of deferred
 * 1.0.0 - (10/11/2013) Make plugin chainable; major version release
 * 1.0.dev4 - (10/1/2013) More specific item selectors

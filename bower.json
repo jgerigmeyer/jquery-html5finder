@@ -1,0 +1,27 @@
+{
+  "name": "jquery-html5finder",
+  "version": "1.0.2",
+  "homepage": "https://github.com/jgerigmeyer/jquery-html5finder",
+  "authors": [
+    "Jonny Gerig Meyer <jonny@oddbird.net>"
+  ],
+  "description": "jQuery HTML5 Drilldown Finder Plugin",
+  "main": "dist/html5finder.js",
+  "keywords": [
+    "drilldown",
+    "finder",
+    "html5"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "libs",
+    "Gruntfile.js"
+  ],
+  "dependencies": {
+    "jquery": "*"
+  }
+}
