@@ -68,9 +68,9 @@ module.exports = function(grunt) {
       js: {
         src: '<%= qunit.options.coverage.src %>',
         options: {
-            cyclomatic: 10,
-            halstead: 20,
-            maintainability: 100
+          cyclomatic: 10,
+          halstead: 20,
+          maintainability: 100
         }
       }
     },
