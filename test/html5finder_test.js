@@ -1,26 +1,18 @@
 (function ($) {
-    /*
-    ======== A Handy Little QUnit Reference ========
-    http://api.qunitjs.com/
-
-    Test methods:
-        module(name, {[setup][ ,teardown]})
-        test(name, callback)
-        expect(numberOfAssertions)
-        stop(increment)
-        start(decrement)
-    Test assertions:
-        ok(value, [message])
-        equal(actual, expected, [message])
-        notEqual(actual, expected, [message])
-        deepEqual(actual, expected, [message])
-        notDeepEqual(actual, expected, [message])
-        strictEqual(actual, expected, [message])
-        notStrictEqual(actual, expected, [message])
-        throws(block, [expected], [message])
-    */
 
     'use strict';
+
+    // Current versions of Sinon and PhantomJS don't play nicely together.
+    // See https://github.com/cjohansen/Sinon.JS/issues/319
+    if (navigator.userAgent.indexOf('PhantomJS') !== -1){
+        window.ProgressEvent = function (type, params) {
+            params = params || {};
+
+            this.lengthComputable = params.lengthComputable || false;
+            this.loaded = params.loaded || 0;
+            this.total = params.total || 0;
+        };
+    }
 
     module('init', {
         setup: function () {
@@ -41,18 +33,18 @@
         }
     });
 
-    test('init is chainable', 1, function () {
+    test('init is chainable', function () {
         ok(this.container.html5finder().is(this.container), 'is chainable');
     });
 
-    test('calls updateNumberCols', 2, function () {
+    test('calls updateNumberCols', function () {
         this.container.html5finder(this.opts);
 
         ok(this.stubs.updateNumberCols.calledOnce, 'updateNumberCols was called once');
         ok(this.stubs.updateNumberCols.calledWith(this.finder, 1), 'updateNumberCols was passed finder and numberCols');
     });
 
-    test('sets numberCols using number of sections in finder', 2, function () {
+    test('sets numberCols using number of sections in finder', function () {
         this.finder.html('<section></section><section></section>');
         var opts = {sectionSelector: 'section'};
         this.container.html5finder(opts);
@@ -61,14 +53,14 @@
         ok(this.stubs.updateNumberCols.calledWith(this.finder, 2), 'updateNumberCols was passed finder and numberCols');
     });
 
-    test('calls markSelected', 2, function () {
+    test('calls markSelected', function () {
         this.container.html5finder(this.opts);
 
         ok(this.stubs.markSelected.calledOnce, 'markSelected was called once');
         ok(this.stubs.markSelected.calledWith(this.finder, this.opts), 'markSelected was passed finder and opts');
     });
 
-    test('calls attachHandler', 2, function () {
+    test('calls attachHandler', function () {
         this.container.html5finder(this.opts);
 
         ok(this.stubs.attachHandler.calledOnce, 'attachHandler was called once');
@@ -84,7 +76,7 @@
         }
     });
 
-    test('markSelected sets data-selected on checked inputs', 4, function () {
+    test('markSelected sets data-selected on checked inputs', function () {
         var checked = this.finder.find('.checked');
         var notChecked = this.finder.find('.not-checked');
         notChecked.attr('data-selected', true);
@@ -107,7 +99,7 @@
         }
     });
 
-    test('updateNumberCols sets finder data-cols', 2, function () {
+    test('updateNumberCols sets finder data-cols', function () {
         ok(!this.finder.data('cols'), 'finder does not have data-cols before fn is called');
 
         this.container.html5finder('updateNumberCols', this.finder, 1);
@@ -128,7 +120,7 @@
         }
     });
 
-    test('horzScroll animates scrollCont to 0 when no sections have .focus', 2, function () {
+    test('horzScroll animates scrollCont to 0 when no sections have .focus', function () {
         sinon.stub(this.finder, 'scrollLeft', function () { return 10; });
         this.container.html5finder('horzScroll', this.finder, this.finder, {
             horizontalScroll: true,
@@ -141,7 +133,7 @@
         this.finder.scrollLeft.restore();
     });
 
-    test('horzScroll animates scrollCont to section before section.focus', 2, function () {
+    test('horzScroll animates scrollCont to section before section.focus', function () {
         var prevSection = $('<section class="focus"><input type="radio" class="finderinput" checked></section>');
         sinon.stub(this.finder, 'scrollLeft', function () { return 10; });
         sinon.stub($.fn, 'position', function () { return {left: 10}; });
@@ -158,7 +150,7 @@
         $.fn.position.restore();
     });
 
-    test('animates scrollCont so that nothing is visible to the right of section.focus if .focus will be last section', 2, function () {
+    test('animates scrollCont so that nothing is visible to the right of section.focus if .focus will be last section', function () {
         var prevSection = $('<section class="focus"><input type="radio" class="finderinput" checked></section>');
         sinon.stub(this.finder, 'scrollLeft', function () { return 10; });
         sinon.stub($.fn, 'position', function () { return {left: 10}; });
@@ -179,7 +171,7 @@
         $.fn.outerWidth.restore();
     });
 
-    test('horzScroll does not animate scrollCont if options.horizontalScroll !== true', 1, function () {
+    test('horzScroll does not animate scrollCont if options.horizontalScroll !== true', function () {
         this.container.html5finder('horzScroll', this.finder, this.finder, {
             horizontalScroll: false,
             sectionSelector: 'section'
@@ -188,7 +180,7 @@
         ok(!this.scrollStub.called, 'scrollCont.animate() was not called');
     });
 
-    test('horzScroll does not animate scrollCont if already scrolled to the correct place', 1, function () {
+    test('horzScroll does not animate scrollCont if already scrolled to the correct place', function () {
         this.container.html5finder('horzScroll', this.finder, this.finder, {
             horizontalScroll: true,
             sectionSelector: 'section'
@@ -236,7 +228,7 @@
         }
     });
 
-    test('addItems renders items using passed template', 1, function () {
+    test('addItems renders items using passed template', function () {
         var column = this.column.clone();
         this.container.html5finder('addItems', this.itemData, 'column-name', this.column, this.container, this.finder, this.opts);
         var data = this.itemData;
@@ -248,14 +240,14 @@
         strictEqual(actual, expected, 'items were rendered and added to newCol');
     });
 
-    test('calls horzScroll', 2, function () {
+    test('calls horzScroll', function () {
         this.container.html5finder('addItems', this.itemData, 'column-name', this.column, this.container, this.finder, this.opts);
 
         ok(this.scrollStub.calledOnce, 'horzScroll was called once');
         ok(this.scrollStub.calledWith(this.finder, this.finder, this.opts), 'horzScroll was called with correct args');
     });
 
-    test('calls itemsAddedCallback', 1, function () {
+    test('calls itemsAddedCallback', function () {
         var callback = sinon.spy();
         this.opts.itemsAddedCallback = callback;
         this.container.html5finder('addItems', this.itemData, 'column-name', this.column, this.container, this.finder, this.opts);
@@ -287,7 +279,7 @@
         }
     });
 
-    test('calls itemClick on input click event', 4, function () {
+    test('calls itemClick on input click event', function () {
         this.item.trigger('click');
 
         ok(this.itemClickStub.calledOnce, 'itemClick was called once');
@@ -296,7 +288,7 @@
         deepEqual(this.itemClickStub.args[0][3], this.opts, 'itemClick was passed opts');
     });
 
-    test('calls horzScroll on :disabled input label click event', 2, function () {
+    test('calls horzScroll on :disabled input label click event', function () {
         this.item.attr('disabled', true);
         this.label.trigger('click');
 
@@ -304,13 +296,13 @@
         ok(this.horzScrollStub.calledWith(this.finder, this.finder, this.opts), 'horzScroll was passed finder, scrollContainer, opts');
     });
 
-    test('does not call horzScroll on non-disabled input label click event', 1, function () {
+    test('does not call horzScroll on non-disabled input label click event', function () {
         this.label.trigger('click');
 
         ok(!this.horzScrollStub.called, 'horzScroll was not called');
     });
 
-    test('gives section .focus on :disabled input label click event', 2, function () {
+    test('gives section .focus on :disabled input label click event', function () {
         ok(this.finder.find('.focus').is(this.otherSection), 'other-section has .focus');
 
         this.item.attr('disabled', true);
@@ -319,7 +311,7 @@
         ok(this.finder.find('.focus').is(this.section), 'this section has focus');
     });
 
-    test('gives section .focus on section (not input or label) click event', 2, function () {
+    test('gives section .focus on section (not input or label) click event', function () {
         ok(this.finder.find('.focus').is(this.otherSection), 'other-section has .focus');
 
         $('<div>').appendTo(this.section).trigger('click');
@@ -327,7 +319,7 @@
         ok(this.finder.find('.focus').is(this.section), 'this section has focus');
     });
 
-    test('does not give section .focus on section child input or label click event', 2, function () {
+    test('does not give section .focus on section child input or label click event', function () {
         ok(this.finder.find('.focus').is(this.otherSection), 'other section has .focus');
 
         $('<input>').appendTo(this.section).trigger('click');
@@ -335,14 +327,14 @@
         ok(this.finder.find('.focus').is(this.otherSection), 'other section still has focus');
     });
 
-    test('calls horzScroll on section (not input or label) click event', 2, function () {
+    test('calls horzScroll on section (not input or label) click event', function () {
         $('<div>').appendTo(this.section).trigger('click');
 
         ok(this.horzScrollStub.calledOnce, 'horzScroll was called once');
         ok(this.horzScrollStub.calledWith(this.finder, this.finder, this.opts), 'horzScroll was passed finder, scrollContainer, opts');
     });
 
-    test('does not call horzScroll on label child element click event', 1, function () {
+    test('does not call horzScroll on label child element click event', function () {
         var child = $('<div>').appendTo(this.label);
         child.trigger('click');
 
@@ -375,7 +367,7 @@
         }
     });
 
-    test('adds focus to section and removes focus from sibling sections', 4, function () {
+    test('adds focus to section and removes focus from sibling sections', function () {
         this.otherSection.addClass('focus');
 
         ok(!this.section.hasClass('focus'), 'section does not have focus');
@@ -387,7 +379,7 @@
         ok(!this.otherSection.hasClass('focus'), 'sibling section no longer has focus');
     });
 
-    test('if in section with focus, shifts focus to next section', 4, function () {
+    test('if in section with focus, shifts focus to next section', function () {
         this.section.addClass('focus');
 
         ok(this.section.hasClass('focus'), 'section has focus');
@@ -399,7 +391,7 @@
         ok(this.otherSection.hasClass('focus'), 'sibling section has focus');
     });
 
-    test('unchecks inputs in other sections', 4, function () {
+    test('unchecks inputs in other sections', function () {
         this.otherItem.attr('checked', true).attr('data-selected', true);
 
         ok(this.otherItem.attr('checked'), 'input in other section is checked');
@@ -411,7 +403,7 @@
         ok(!this.otherItem.data('selected'), 'input in other section has data-selected == false');
     });
 
-    test('removes later sections beyond one', 2, function () {
+    test('removes later sections beyond one', function () {
         this.otherSection.clone().addClass('future-section').appendTo(this.finder);
 
         ok(this.finder.find('.future-section').length, 'later section exists');
@@ -421,7 +413,7 @@
         ok(!this.finder.find('.future-section').length, 'later section has been removed');
     });
 
-    test('calls updateNumberCols with new number of sections', 2, function () {
+    test('calls updateNumberCols with new number of sections', function () {
         this.otherSection.clone().appendTo(this.finder);
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
 
@@ -429,14 +421,14 @@
         ok(this.stubs.updateNumberCols.calledWith(this.finder, 2), 'updateNumberCols called with finder and new number of sections');
     });
 
-    test('calls horzScroll', 2, function () {
+    test('calls horzScroll', function () {
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
 
         ok(this.stubs.horzScroll.calledOnce, 'horzScroll was called once');
         ok(this.stubs.horzScroll.calledWith(this.finder, this.finder, this.opts), 'horzScroll called with correct args');
     });
 
-    test('calls itemSelectedCallback', 1, function () {
+    test('calls itemSelectedCallback', function () {
         var callback = sinon.spy();
         this.opts.itemSelectedCallback = callback;
         this.item.data('children', true);
@@ -445,7 +437,7 @@
         ok(callback.calledOnce, 'itemSelectedCallback was called once');
     });
 
-    test('does not call itemSelectedCallback if item has no children', 1, function () {
+    test('does not call itemSelectedCallback if item has no children', function () {
         var callback = sinon.spy();
         this.opts.itemSelectedCallback = callback;
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
@@ -480,7 +472,7 @@
         }
     });
 
-    test('adds focus to section and removes focus from sibling sections', 4, function () {
+    test('adds focus to section and removes focus from sibling sections', function () {
         this.otherSection.addClass('focus');
 
         ok(!this.section.hasClass('focus'), 'section does not have focus');
@@ -492,7 +484,7 @@
         ok(!this.otherSection.hasClass('focus'), 'sibling section no longer has focus');
     });
 
-    test('removes later sections', 2, function () {
+    test('removes later sections', function () {
         this.otherSection.clone().appendTo(this.finder);
 
         strictEqual(this.finder.find('section').length, 3, '3 sections exist');
@@ -502,7 +494,7 @@
         strictEqual(this.finder.find('section').length, 1, '1 section exists');
     });
 
-    test('calls updateNumberCols with new number of sections', 2, function () {
+    test('calls updateNumberCols with new number of sections', function () {
         this.otherSection.clone().appendTo(this.finder);
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
 
@@ -510,14 +502,14 @@
         ok(this.stubs.updateNumberCols.calledWith(this.finder, 1), 'updateNumberCols called with finder and new number of sections');
     });
 
-    test('calls horzScroll with scrollContainer', 2, function () {
+    test('calls horzScroll with scrollContainer', function () {
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
 
         ok(this.stubs.horzScroll.calledOnce, 'horzScroll was called once');
         ok(this.stubs.horzScroll.calledWith(this.finder, this.finder, this.opts), 'horzScroll called with finder, scrollContainer, and opts');
     });
 
-    test('calls lastChildSelectedCallback', 2, function () {
+    test('calls lastChildSelectedCallback', function () {
         var callback = sinon.spy();
         this.opts.lastChildSelectedCallback = callback;
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
@@ -565,7 +557,7 @@
         }
     });
 
-    test('calls updateNumberCols with new number of sections', 2, function () {
+    test('calls updateNumberCols with new number of sections', function () {
         this.otherSection.clone().appendTo(this.finder);
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
 
@@ -573,7 +565,7 @@
         ok(this.stubs.updateNumberCols.calledWith(this.finder, 2), 'updateNumberCols called with finder and new number of sections');
     });
 
-    test('replaces target with new section using passed template', 1, function () {
+    test('replaces target with new section using passed template', function () {
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
         var data = {colname: 'col2'};
         var expected = $($.parseHTML(this.columnTpl(data))).html();
@@ -582,7 +574,7 @@
         strictEqual(actual, expected, 'new section was rendered and added after active section');
     });
 
-    test('renders new section using passed template', 1, function () {
+    test('renders new section using passed template', function () {
         this.otherSection.remove();
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
         var data = {colname: 'col2'};
@@ -592,7 +584,7 @@
         strictEqual(actual, expected, 'new section was rendered and added after active section');
     });
 
-    test('loadingOverlay is added to newCol', 1, function () {
+    test('loadingOverlay is added to newCol', function () {
         $.fn.loadingOverlay = sinon.spy();
         this.opts.loading = true;
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
@@ -602,14 +594,14 @@
         delete $.fn.loadingOverlay;
     });
 
-    test('sends GET to data-url', 2, function () {
+    test('sends GET to data-url', function () {
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
 
         strictEqual(this.requests[0].url, '/test/url/', 'xhr sent to data-url');
         strictEqual(this.requests[0].method, 'GET', 'xhr sent as GET');
     });
 
-    test('xhr success calls addItems with response', 6, function () {
+    test('xhr success calls addItems with response', function () {
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
         this.requests[0].respond(200, {'content-type': 'application/json'}, '{"test": "data"}');
 
@@ -621,7 +613,7 @@
         deepEqual(this.stubs.addItems.args[0][5], this.opts, 'addItems was passed opts');
     });
 
-    test('xhr success removes loadingOverlay from newCol', 2, function () {
+    test('xhr success removes loadingOverlay from newCol', function () {
         $.fn.loadingOverlay = sinon.spy();
         this.opts.loading = true;
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
@@ -633,7 +625,7 @@
         delete $.fn.loadingOverlay;
     });
 
-    test('xhr failure removes loadingOverlay from newCol', 2, function () {
+    test('xhr failure removes loadingOverlay from newCol', function () {
         $.fn.loadingOverlay = sinon.spy();
         this.opts.loading = true;
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
@@ -645,7 +637,7 @@
         delete $.fn.loadingOverlay;
     });
 
-    test('second click uses cached response data', 8, function () {
+    test('second click uses cached response data', function () {
         this.opts.cache = true;
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
         this.requests[0].respond(200, {'content-type': 'application/json'}, '{"test": "data"}');
@@ -661,7 +653,7 @@
         deepEqual(this.stubs.addItems.args[1][5], this.opts, 'addItems was passed opts');
     });
 
-    test('second click does not use cached response data if ``options.cached: false``', 1, function () {
+    test('second click does not use cached response data if ``options.cached: false``', function () {
         this.item.attr('id', 'test-id');
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
         this.requests[0].respond(200, {'content-type': 'application/json'}, '{"test": "data"}');
@@ -670,7 +662,7 @@
         strictEqual(this.requests.length, 2, 'two xhr requests were made');
     });
 
-    test('calls callback', 1, function () {
+    test('calls callback', function () {
         var callback = sinon.spy();
         this.opts.itemSelectedCallback = callback;
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
@@ -678,7 +670,7 @@
         ok(callback.calledOnce, 'itemSelectedCallback was called once');
     });
 
-    test('calls markSelected', 2, function () {
+    test('calls markSelected', function () {
         this.container.html5finder('itemClick', this.container, this.finder, this.item, this.opts);
 
         ok(this.stubs.markSelected.calledOnce, 'markSelected was called once');
@@ -697,27 +689,27 @@
         }
     });
 
-    test('if no args, calls init method', 1, function () {
+    test('if no args, calls init method', function () {
         this.container.html5finder();
 
         ok(this.initStub.calledOnce, 'init was called once');
     });
 
-    test('if first arg is an object, calls init method with args', 2, function () {
+    test('if first arg is an object, calls init method with args', function () {
         this.container.html5finder({test: 'data'}, 'more');
 
         ok(this.initStub.calledOnce, 'init was called once');
         ok(this.initStub.calledWith({test: 'data'}, 'more'), 'init was passed args');
     });
 
-    test('if first arg is a method, calls method with remaining args', 2, function () {
+    test('if first arg is a method, calls method with remaining args', function () {
         this.container.html5finder('init', {test: 'data'}, 'more');
 
         ok(this.initStub.calledOnce, 'init was called once');
         ok(this.initStub.calledWith({test: 'data'}, 'more'), 'init was passed remaining args');
     });
 
-    test('if first arg not a method or object, returns an error', 3, function () {
+    test('if first arg not a method or object, returns an error', function () {
         sinon.stub($, 'error');
         this.container.html5finder('test');
 
