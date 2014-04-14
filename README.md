@@ -1,5 +1,8 @@
 # HTML5 Finder
 
+[![Build Status](https://travis-ci.org/jgerigmeyer/jquery-html5finder.svg?branch=master)](https://travis-ci.org/jgerigmeyer/jquery-html5finder)
+[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
+
 jQuery HTML5 Drilldown Finder Plugin
 
 ## Getting Started
