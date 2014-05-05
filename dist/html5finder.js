@@ -1,4 +1,4 @@
-/*! HTML5 Finder - v1.0.2 - 2014-02-19
+/*! HTML5 Finder - v1.0.2 - 2014-05-05
 * https://github.com/jgerigmeyer/jquery-html5finder
 * Copyright (c) 2014 Jonny Gerig Meyer; Licensed MIT */
 (function ($) {
@@ -252,11 +252,9 @@
                                         // ...https://github.com/jgerigmeyer/django-ajax-loading-overlay
     horizontalScroll: false,            // If true, scrolls to center active section
     scrollContainer: null,              // The container (window) to be scrolled
-    scrollSpeed: 500,                   // Speed of the scroll (in ms)
     selected: 'input:checked',          // A selected element
     notSelected: 'input:not(:checked)', // An unselected element
     finderSelector: '.finder-body',     // Finder container
-    headerSelector: 'header',           // Section headers
     sectionSelector: null,              // Sections
     sectionContentSelector: null,       // Content to be replaced by Ajax function
     itemSelector: '.finderinput',       // Selector for items in each section
@@ -264,7 +262,6 @@
     itemSelectedCallback: null,         // Callback function,  runs after input in any section (except lastChild) is selected
     lastChildSelectedCallback: null,    // Callback function,  runs after input in last section is selected
     itemsAddedCallback: null,           // Callback function,  runs after new items are added
-    sortLinkSelector: '.sortlink',      // Selector for link (in header) to sort items in that column
     cache: true,                        // If true, ajax response data will be cached
     getAjaxUrl: function (item) {       // Function that returns the ajax-url to get an item's children
       return item.data('url');
